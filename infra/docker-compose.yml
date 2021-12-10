@@ -16,6 +16,25 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - media_value:/var/html/media/
+      - static_value:/var/html/static/
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: always
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             gunicorn foodgram.wsgi:application --bind 0.0.0.0:8080"
+    volumes:
+      - media_value:/code/media/
+      - static_value:/code/static/
+
+volumes:
+  media_value:
+  static_value:
+
 
 
 
