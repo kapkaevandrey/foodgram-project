@@ -1,0 +1,6 @@
+Django==3.2.10
+djangorestframework==3.12.4
+django-filter==21.1
+pillow==8.4.0
+
+djoser==2.1.0
