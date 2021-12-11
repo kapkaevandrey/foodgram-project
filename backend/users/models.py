@@ -5,7 +5,10 @@ from django.utils.translation import gettext as _
 
 
 class User(AbstractUser):
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
+    email = models.EmailField(_('email address'), blank=False, unique=True)
+
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
+    USERNAME_FIELD = 'email'
 
 
 class Follow(models.Model):
@@ -26,7 +29,6 @@ class Follow(models.Model):
         )]
 
 
-User._meta.get_field('email').blank = False
 User._meta.get_field('last_name').blank = False
 User._meta.get_field('first_name').blank = False
 

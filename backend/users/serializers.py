@@ -7,18 +7,6 @@ from .models import Follow
 User = get_user_model()
 
 
-class UserSerializerSignUp(serializers.ModelSerializer):
-    class Meta:
-        fields = ('username', 'last_name', 'first_name', 'email', 'password')
-
-        model = User
-
-
-class UserSerializerSignIn(serializers.ModelSerializer):
-    class Meta:
-        fields = ('username', 'last_name', 'first_name', 'email', 'password')
-
-
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         slug_field="username", read_only=True,
