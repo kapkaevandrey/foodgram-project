@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 
 from django.utils.translation import gettext as _
 
@@ -10,7 +11,15 @@ class Tag(models.Model):
     """Tag for recipe"""
     name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True)
-    color = models.CharField(max_length=7, default='#42aaff')
+    color = models.CharField(
+        max_length=7,
+        default='#42aaff',
+        validators=[RegexValidator(
+            regex=r'^#(?:[0-9a-fA-F]{3}){1,2}$',
+            message=_(
+                'The HEX code is not valid, please use the format #ffffff'
+            )
+        )])
 
     def __str__(self):
         return self.name
@@ -77,7 +86,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=256)
     image = models.ImageField(upload_to='recipes/')
     tag = models.ManyToManyField(Tag, through='RecipeTag', blank=False)
-    ingredient = models.ForeignKey(Ingredient, related_name='recipes', on_delete=models.CASCADE)
+    ingredient = models.ManyToManyField(Ingredient, through=RecipeIngredients)
     cooking_time = models.PositiveBigIntegerField()
     pub_data = models.DateTimeField(auto_now_add=True, db_index=True)
 
