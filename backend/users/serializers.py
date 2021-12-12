@@ -1,10 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
+from djoser.serializers import UserSerializer
+
 from rest_framework import serializers
+
 
 from .models import Follow
 
 User = get_user_model()
+
+
+class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return Follow.objects.filter(user=user, author=obj).exists()
+
+    class Meta:
+        model = User
+        fields = UserSerializer.Meta.fields + ('is_subscribed',)
+        read_only_fields = UserSerializer.Meta.read_only_fields
 
 
 class FollowSerializer(serializers.ModelSerializer):

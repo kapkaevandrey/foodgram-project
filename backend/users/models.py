@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import ValidationError
 
 from django.utils.translation import gettext as _
 
@@ -16,6 +17,12 @@ class Follow(models.Model):
                              on_delete=models.CASCADE)
     author = models.ForeignKey(User, related_name='following',
                                on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError(
+                _('You can\'t subscribe to yourself')
+            )
 
     def __str__(self):
         return _('{user} follow to {author}').format(user=self.user, author=self.author)
