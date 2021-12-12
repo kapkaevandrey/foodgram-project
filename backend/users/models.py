@@ -8,8 +8,7 @@ from django.utils.translation import gettext as _
 class User(AbstractUser):
     email = models.EmailField(_('email address'), blank=False, unique=True)
 
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
-    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
 
 class Follow(models.Model):

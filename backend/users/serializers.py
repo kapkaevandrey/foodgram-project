@@ -21,7 +21,7 @@ class CustomUserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = UserSerializer.Meta.fields + ('is_subscribed',)
+        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
         read_only_fields = UserSerializer.Meta.read_only_fields
 
 
