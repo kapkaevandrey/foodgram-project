@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 
 from django.utils.translation import gettext as _
 
@@ -51,17 +51,19 @@ class Ingredient(models.Model):
     """Description ingredient"""
     type = models.ForeignKey(IngredientType, on_delete=models.CASCADE,
                              related_name='ingredients')
-    quantity = models.FloatField()
+    amount = models.FloatField(
+        validators=(MinValueValidator(0.0),)
+    )
 
     def __str__(self):
-        return _('{type} - {quantity}').format(type=self.type, quantity=self.quantity)
+        return _('{type} - {amount}').format(type=self.type, amount=self.amount)
 
     class Meta:
         ordering = ['type']
         verbose_name = _('Ingredient')
         verbose_name_plural = _('Ingredients')
         constraints = [models.UniqueConstraint(
-            fields=["type", "quantity"], name="unique ingredient"
+            fields=["type", "amount"], name="unique ingredient"
         )]
 
 
@@ -83,18 +85,19 @@ class RecipeIngredients(models.Model):
 class Recipe(models.Model):
     """Recipe of the dish"""
     author = models.ForeignKey(User, related_name='recipes', on_delete=models.CASCADE)
-    title = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
+    text = models.TextField()
     image = models.ImageField(upload_to='recipes/')
-    tag = models.ManyToManyField(Tag, through='RecipeTag', blank=False)
-    ingredient = models.ManyToManyField(Ingredient, through=RecipeIngredients)
+    tags = models.ManyToManyField(Tag, through='RecipeTag', blank=False)
+    ingredients = models.ManyToManyField(Ingredient, through=RecipeIngredients, blank=False)
     cooking_time = models.PositiveBigIntegerField()
-    pub_data = models.DateTimeField(auto_now_add=True, db_index=True)
+    pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 
     def __str__(self):
-        return _('{title} - {author}').format(title=self.title, author=self.author.get_full_name())
+        return _('{title} - {author}').format(title=self.name, author=self.author.get_full_name())
 
     class Meta:
-        ordering = ['pub_data']
+        ordering = ['pub_date']
         verbose_name = _('Recipe')
         verbose_name_plural = _('Recipes')
 

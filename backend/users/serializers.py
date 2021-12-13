@@ -4,7 +4,6 @@ from djoser.serializers import UserSerializer
 
 from rest_framework import serializers
 
-
 from .models import Follow
 
 User = get_user_model()
@@ -22,7 +21,7 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
-        read_only_fields = UserSerializer.Meta.read_only_fields
+        read_only_fields = ('username', 'email')
 
 
 class FollowSerializer(serializers.ModelSerializer):
