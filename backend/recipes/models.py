@@ -88,10 +88,12 @@ class Recipe(models.Model):
     name = models.CharField(max_length=256)
     text = models.TextField()
     image = models.ImageField(upload_to='recipes/')
-    tags = models.ManyToManyField(Tag, through='RecipeTag', blank=False)
-    ingredients = models.ManyToManyField(Ingredient, through=RecipeIngredients, blank=False)
+    tags = models.ManyToManyField(Tag, through='RecipeTag')
+    ingredients = models.ManyToManyField(Ingredient, through=RecipeIngredients)
     cooking_time = models.PositiveBigIntegerField()
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
+    recipe_followers = models.ManyToManyField(User, through='FavoriteRecipes', related_name='favorite_recipes')
+    shop_followers = models.ManyToManyField(User, through='ShoppingList', related_name='shopping_list')
 
     def __str__(self):
         return _('{title} - {author}').format(title=self.name, author=self.author.get_full_name())
@@ -103,8 +105,8 @@ class Recipe(models.Model):
 
 
 class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, related_name='recipe', on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, related_name='tag', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, related_name='tag', on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, related_name='recipes', on_delete=models.CASCADE)
 
     def __str__(self):
         return _('{tag} - {recipe}').format(tag=self.tag, recipe=self.recipe)
@@ -119,8 +121,8 @@ class RecipeTag(models.Model):
 
 
 class FavoriteRecipes(models.Model):
-    user = models.ForeignKey(User, related_name='favorite_recipes', on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, related_name='favorite_recipes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     def __str__(self):
         return _('{user} - {recipe}').format(user=self.user, recipe=self.recipe)
@@ -135,8 +137,8 @@ class FavoriteRecipes(models.Model):
 
 
 class ShoppingList(models.Model):
-    user = models.ForeignKey(User, related_name='shopping_list', on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, related_name='shopping_list', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     def __str__(self):
         return _('{user} - {recipe}').format(user=self.user, recipe=self.recipe)

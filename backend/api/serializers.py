@@ -1,8 +1,12 @@
+import base64
+import uuid
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import Tag, Recipe, Ingredient, IngredientType
+from recipes.models import Tag, Recipe, Ingredient, IngredientType, RecipeIngredients
 from users.serializers import CustomUserSerializer
 
 User = get_user_model()
@@ -37,7 +41,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         exclude = ('type',)
 
 
-
 class RecipeSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
@@ -63,6 +66,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         required=True,
@@ -72,7 +76,28 @@ class RecipeSerializer(serializers.ModelSerializer):
         required=True,
         many=True)
 
+    def create(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tag_list = validated_data.pop('tags')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tag_list)
+        for ingredient in ingredients:
+            current_ingredient, status = Ingredient.objects.get_or_create(**ingredient)
+            RecipeIngredients.objects.create(ingredient=current_ingredient, recipe=recipe)
+        return recipe
+
+    def update(self, instance, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tag_list = validated_data.pop('tags')
+        Recipe.objects.filter(id=instance.id).update(**validated_data)
+        instance.tags.set(tag_list)
+        instance.ingredients.clear()
+        for ingredient in ingredients:
+            current_ingredient, status = Ingredient.objects.get_or_create(**ingredient)
+            RecipeIngredients.objects.create(ingredient=current_ingredient, recipe=instance)
+        instance.save()
+        return instance
+
     class Meta:
         model = Recipe
-        exclude = ('pub_date', 'image', 'author')
-
+        exclude = ('pub_date', 'author')

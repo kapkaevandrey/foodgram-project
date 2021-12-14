@@ -11,6 +11,12 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
     USERNAME_FIELD = 'email'
 
+    @property
+    def is_admin(self):
+        return (
+            self.is_superuser
+            or self.is_staff)
+
     def __str__(self):
         return self.username
 
