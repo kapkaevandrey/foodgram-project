@@ -1,20 +1,15 @@
-import base64
-import uuid
-
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import Tag, Recipe, Ingredient, IngredientType, RecipeIngredients
+from recipes.models import (Tag, Recipe, Ingredient, IngredientType,
+                            RecipeIngredients, FavoriteRecipes, ShoppingList)
 from users.serializers import CustomUserSerializer
 
 User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Tag"""
-
     class Meta:
         model = Tag
         fields = '__all__'
@@ -29,6 +24,7 @@ class IngredientTypeSerializer(serializers.ModelSerializer):
 class IngredientGetSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='type.name')
     measurement_unit = serializers.CharField(source='type.measurement_unit')
+
     class Meta:
         model = Ingredient
         exclude = ('type',)
@@ -36,6 +32,7 @@ class IngredientGetSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=IngredientType.objects.all(), source='type')
+
     class Meta:
         model = Ingredient
         exclude = ('type',)
@@ -48,7 +45,7 @@ class RecipeSimpleSerializer(serializers.ModelSerializer):
 
 
 class RecipeGetSerializer(serializers.ModelSerializer):
-    is_favorite = serializers.SerializerMethodField(required=False, read_only=True)
+    is_favorited = serializers.SerializerMethodField(required=False, read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(required=False, read_only=True)
     author = CustomUserSerializer()
     tags = TagSerializer(many=True)
@@ -56,13 +53,19 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        exclude = ('pub_date',)
+        exclude = ('pub_date', 'recipe_followers', 'shop_followers')
 
-    def get_is_favorite(self, obj):
-        return False
+    def get_is_favorited(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return user in obj.recipe_followers.all()
 
     def get_is_in_shopping_cart(self, obj):
-        return False
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return user in obj.shop_followers.all()
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -89,7 +92,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         tag_list = validated_data.pop('tags')
-        Recipe.objects.filter(id=instance.id).update(**validated_data)
+        [setattr(instance, attr, value) for attr, value in validated_data.items()]
         instance.tags.set(tag_list)
         instance.ingredients.clear()
         for ingredient in ingredients:

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (Tag, IngredientType, Ingredient,
                      RecipeTag, Recipe, FavoriteRecipes,
-                     RecipeIngredients)
+                     RecipeIngredients, ShoppingList)
 
 
 admin.site.register(Tag)
@@ -12,4 +12,6 @@ admin.site.register(RecipeTag)
 admin.site.register(RecipeIngredients)
 admin.site.register(Recipe)
 admin.site.register(FavoriteRecipes)
+admin.site.register(ShoppingList)
+
 

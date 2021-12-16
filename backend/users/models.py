@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), blank=False, unique=True)
+    subscribers = models.ManyToManyField('User')
 
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
     USERNAME_FIELD = 'email'
@@ -21,11 +22,10 @@ class User(AbstractUser):
         return self.username
 
 
-
 class Follow(models.Model):
-    user = models.ForeignKey(User, related_name='follower',
+    user = models.ForeignKey(User, related_name='users',
                              on_delete=models.CASCADE)
-    author = models.ForeignKey(User, related_name='following',
+    author = models.ForeignKey(User, related_name='authors',
                                on_delete=models.CASCADE)
 
     def clean(self):
