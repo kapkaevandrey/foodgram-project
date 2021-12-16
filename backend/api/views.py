@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.http import HttpResponse, FileResponse
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -10,6 +11,7 @@ from recipes.models import Tag, Recipe, IngredientType, Ingredient
 from .serializers import (TagSerializer, RecipeSimpleSerializer,
                           RecipeGetSerializer, RecipeSerializer, IngredientTypeSerializer, IngredientSerializer)
 from .permissions import AuthorAdminOrReadOnly, AdminOrReadOnly
+from .pagination import PageNumberLimitPagination
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -22,6 +24,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (AuthorAdminOrReadOnly,)
+    pagination_class = PageNumberLimitPagination
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -80,6 +83,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer = RecipeSimpleSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(methods=['get'], detail=False,
+            permission_classes=[permissions.IsAuthenticated],)
+    def download_shopping_cart(self, request):
+        recipes = request.user.shopping_list.all()
+        if len(recipes) == 0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        ingredients = Ingredient.objects.filter(recipe__in=recipes)
+        data = {}
+        for ingredient in ingredients:
+            if ingredient.type.__str__() not in data:
+                data[ingredient.type.__str__()] = 0
+            data[ingredient.type.__str__()] += ingredient.amount
+        with open(
+                f"{settings.BASE_DIR}/media/shopping_list.txt",
+                "w", encoding="utf8") as file:
+            for key, value in data.items():
+                file.write(f"{key.capitalize()} - {value}\n")
+        return FileResponse(open(f"{settings.BASE_DIR}/media/shopping_list.txt", "rb"))
+
 
 class IngredientTypeViewSet(viewsets.ModelViewSet):
     queryset = IngredientType.objects.all()
@@ -91,3 +113,5 @@ class IngredientTypeViewSet(viewsets.ModelViewSet):
 class IngredientGetViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+
+

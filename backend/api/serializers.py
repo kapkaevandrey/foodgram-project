@@ -1,12 +1,27 @@
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from recipes.models import (Tag, Recipe, Ingredient, IngredientType,
                             RecipeIngredients, FavoriteRecipes, ShoppingList)
-from users.serializers import CustomUserSerializer
 
 User = get_user_model()
+
+
+class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return obj in user.subscribers.all()
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+        read_only_fields = ('username', 'email')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -104,3 +119,20 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = ('pub_date', 'author')
+
+
+class GetUserSerializer(CustomUserSerializer):
+    recipes = RecipeSimpleSerializer(many=True)
+    recipes_count = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_is_subscribed(self, obj):
+        return True
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.all().count()
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        read_only_fields = ('username', 'email')

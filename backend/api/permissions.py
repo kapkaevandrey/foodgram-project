@@ -10,7 +10,7 @@ class AdminOrReadOnly(permissions.BasePermission):
                     and request.user.is_admin))
 
 
-class AuthorAdminOrReadOnly(permissions.BasePermission):
+class AuthorAdminOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
     """Разрешение на чтение для всех пользователей.
     Редактирование, обновление или удаление разрешено только
     авторам и администраторам."""
