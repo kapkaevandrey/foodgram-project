@@ -1,6 +1,7 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import RegexValidator, MinValueValidator, ValidationError
 
 from django.utils.translation import gettext as _
 
@@ -68,12 +69,18 @@ class Ingredient(models.Model):
 
 
 class RecipeIngredients(models.Model):
-    # TODO подумать над ограничением создания ингридиента с тем же названием
     recipe = models.ForeignKey('Recipe', related_name='recipe_ingredient', on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, related_name='ingredient_recipe', on_delete=models.CASCADE)
 
     def __str__(self):
         return _('{recipe} - {ingredient}').format(recipe=self.recipe, ingredient=self.ingredient)
+
+    def clean(self):
+        if self.recipe.ingredients.filter(type=self.ingredient.type):
+            raise ValidationError(
+                _('This recipe already has the ingredient '
+                  '{name}').format(name=self.ingredient.type)
+            )
 
     class Meta:
         ordering = ['recipe']

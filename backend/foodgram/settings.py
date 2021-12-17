@@ -141,3 +141,5 @@ DJOSER = {'PERMISSIONS': {'user_list': ['rest_framework.permissions.IsAuthentica
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+HEX_PATTERN = r'^#(?:[0-9a-fA-F]{3}){1,2}$'

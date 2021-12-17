@@ -1,4 +1,8 @@
+import re
+
 from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.utils.translation import gettext as _
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -28,6 +32,12 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
+    def validate_color(self, value):
+        if not re.fullmatch(settings.HEX_PATTERN, value):
+            raise serializers.ValidationError(
+                _('The HEX code is not valid, please use the format #ffffff'))
+        return value
 
 
 class IngredientTypeSerializer(serializers.ModelSerializer):
@@ -116,9 +126,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    def validate_ingredients(self, value):
+        ingredients_type = [ingredient['type'] for ingredient in value]
+        if len(ingredients_type) != len(set(ingredients_type)):
+            raise serializers.ValidationError(
+                _('This recipe already has this ingredient'))
+        return value
+
     class Meta:
         model = Recipe
-        exclude = ('pub_date', 'author')
+        exclude = ('pub_date', 'author', 'recipe_followers', 'shop_followers')
 
 
 class GetUserSerializer(CustomUserSerializer):
