@@ -7,17 +7,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
-  nginx:
-    image: nginx:1.19.3
-    ports:
-      - 80:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-      - media_value:/var/html/media/
-      - static_value:/var/html/static/
   backend:
     build:
       context: ../backend
@@ -30,6 +19,18 @@ services:
     volumes:
       - media_value:/code/media/
       - static_value:/code/static/
+
+  nginx:
+    image: nginx:1.19.3
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
+      - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - media_value:/var/html/media/
+      - static_value:/var/html/static/
 
 volumes:
   media_value:

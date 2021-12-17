@@ -126,6 +126,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
     class Meta:
         model = Recipe
         exclude = ('pub_date', 'author', 'recipe_followers', 'shop_followers')

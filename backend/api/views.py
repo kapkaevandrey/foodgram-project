@@ -2,29 +2,35 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.conf import settings
 from django.http import HttpResponse, FileResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from recipes.models import Tag, Recipe, IngredientType, Ingredient
 from .serializers import (TagSerializer, RecipeSimpleSerializer,
-                          RecipeGetSerializer, RecipeSerializer, IngredientTypeSerializer, IngredientSerializer)
+                          RecipeGetSerializer, RecipeSerializer, IngredientTypeSerializer)
 from .permissions import AuthorAdminOrReadOnly, AdminOrReadOnly
 from .pagination import PageNumberLimitPagination
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(mixins.RetrieveModelMixin,
+                 mixins.ListModelMixin,
+                 viewsets.GenericViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
 
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (AuthorAdminOrReadOnly,)
     pagination_class = PageNumberLimitPagination
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ('author__id',)
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -33,6 +39,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        queryset = Recipe.objects.all()
+        user = self.request.user
+        if user.is_anonymous:
+            return queryset
+        is_favorite = self.request.query_params.get('is_favorited')
+        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        if is_favorite and is_in_shopping_cart:
+            queryset = user.favorite_recipes.all() & user.shopping_list.all()
+        elif is_in_shopping_cart:
+            queryset = user.shopping_list.all()
+        elif is_favorite:
+            queryset = user.favorite_recipes.all()
+        return queryset
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = False
@@ -84,7 +105,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], detail=False,
-            permission_classes=[permissions.IsAuthenticated],)
+            permission_classes=[permissions.IsAuthenticated], )
     def download_shopping_cart(self, request):
         recipes = request.user.shopping_list.all()
         if len(recipes) == 0:
@@ -108,10 +129,5 @@ class IngredientTypeViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientTypeSerializer
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
-
-
-class IngredientGetViewSet(viewsets.ModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-
-
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)
