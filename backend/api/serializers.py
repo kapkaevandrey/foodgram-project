@@ -126,13 +126,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def validate_ingredients(self, value):
-        ingredients_type = [ingredient['type'] for ingredient in value]
-        if len(ingredients_type) != len(set(ingredients_type)):
-            raise serializers.ValidationError(
-                _('This recipe already has this ingredient'))
-        return value
-
     class Meta:
         model = Recipe
         exclude = ('pub_date', 'author', 'recipe_followers', 'shop_followers')

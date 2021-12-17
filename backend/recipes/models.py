@@ -75,13 +75,6 @@ class RecipeIngredients(models.Model):
     def __str__(self):
         return _('{recipe} - {ingredient}').format(recipe=self.recipe, ingredient=self.ingredient)
 
-    def clean(self):
-        if self.recipe.ingredients.filter(type=self.ingredient.type):
-            raise ValidationError(
-                _('This recipe already has the ingredient '
-                  '{name}').format(name=self.ingredient.type)
-            )
-
     class Meta:
         ordering = ['recipe']
         verbose_name = _('Recipe Ingredients')
