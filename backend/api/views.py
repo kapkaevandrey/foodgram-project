@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.conf import settings
-from django.http import HttpResponse, FileResponse
+from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, permissions, status, mixins, filters
@@ -13,6 +13,8 @@ from .serializers import (TagSerializer, RecipeSimpleSerializer,
                           RecipeGetSerializer, RecipeSerializer, IngredientTypeSerializer)
 from .permissions import AuthorAdminOrReadOnly, AdminOrReadOnly
 from .pagination import PageNumberLimitPagination
+from .filters import IngredientTypeFilter
+
 
 
 class TagViewSet(mixins.RetrieveModelMixin,
@@ -22,7 +24,6 @@ class TagViewSet(mixins.RetrieveModelMixin,
     queryset = Tag.objects.all()
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
-
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -129,5 +130,6 @@ class IngredientTypeViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientTypeSerializer
     pagination_class = None
     permission_classes = (AdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientTypeFilter
+
