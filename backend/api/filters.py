@@ -1,15 +1,14 @@
-import django_filters
-from django_filters.rest_framework import CharFilter, FilterSet, MultipleChoiceFilter
+from django_filters.rest_framework import CharFilter, FilterSet, AllValuesMultipleFilter
 
 from recipes.models import Recipe, IngredientType
 
 
 class RecipeFilter(FilterSet):
-    tags = CharFilter(field_name='tags__slug')
+    tags = AllValuesMultipleFilter(field_name='tags__slug', lookup_expr='exact')
 
     class Meta:
         model = Recipe
-        fields = ['tags']
+        fields = ['tags__slug']
 
 
 class IngredientTypeFilter(FilterSet):
@@ -20,4 +19,4 @@ class IngredientTypeFilter(FilterSet):
 
     class Meta:
         model = IngredientType
-        fields = {'name': ['istartswith', 'icontains']}
+        fields = ['name']

@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), blank=False, unique=True)
-    subscribers = models.ManyToManyField('User')
+    subscribers = models.ManyToManyField('User', through='Follow')
 
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
     USERNAME_FIELD = 'email'
@@ -35,7 +35,8 @@ class Follow(models.Model):
             )
 
     def __str__(self):
-        return _('{user} follow to {author}').format(user=self.user, author=self.author)
+        return _('{user} follow to {author}').format(user=self.user,
+                                                     author=self.author)
 
     class Meta:
         ordering = ['user']
@@ -48,5 +49,3 @@ class Follow(models.Model):
 
 User._meta.get_field('last_name').blank = False
 User._meta.get_field('first_name').blank = False
-
-

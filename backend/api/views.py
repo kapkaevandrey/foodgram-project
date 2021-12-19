@@ -10,11 +10,11 @@ from rest_framework.response import Response
 
 from recipes.models import Tag, Recipe, IngredientType, Ingredient
 from .serializers import (TagSerializer, RecipeSimpleSerializer,
-                          RecipeGetSerializer, RecipeSerializer, IngredientTypeSerializer)
+                          RecipeGetSerializer, RecipeSerializer,
+                          IngredientTypeSerializer)
 from .permissions import AuthorAdminOrReadOnly, AdminOrReadOnly
 from .pagination import PageNumberLimitPagination
-from .filters import IngredientTypeFilter
-
+from .filters import IngredientTypeFilter, RecipeFilter
 
 
 class TagViewSet(mixins.RetrieveModelMixin,
@@ -32,6 +32,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberLimitPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('author__id',)
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -47,7 +48,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if user.is_anonymous:
             return queryset
         is_favorite = self.request.query_params.get('is_favorited')
-        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        is_in_shopping_cart = self.request.query_params.get(
+            'is_in_shopping_cart'
+        )
         if is_favorite and is_in_shopping_cart:
             queryset = user.favorite_recipes.all() & user.shopping_list.all()
         elif is_in_shopping_cart:
@@ -69,14 +72,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE':
             if not recipe_exist:
                 return Response(
-                    {"errors": _('This recipe is not on your favorites list')},
+                    {"errors": _(
+                        'This recipe is not on your favorites list'
+                    )},
                     status=status.HTTP_400_BAD_REQUEST)
             recipe.recipe_followers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
         if request.method == 'GET':
             if recipe_exist:
                 return Response(
-                    {"errors": _('This recipe is already in the favorites list')},
+                    {"errors": _(
+                        'This recipe is already in the favorites list'
+                    )},
                     status=status.HTTP_400_BAD_REQUEST)
             recipe.recipe_followers.add(user)
             serializer = RecipeSimpleSerializer(recipe)
@@ -98,7 +105,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'GET':
             if recipe_exist:
                 return Response(
-                    {'errors': _('This recipe is already in the shopping list')},
+                    {'errors': _(
+                        'This recipe is already in the shopping list'
+                    )},
                     status=status.HTTP_400_BAD_REQUEST)
             recipe.shop_followers.add(user)
             recipe.save()
@@ -122,7 +131,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 "w", encoding="utf8") as file:
             for key, value in data.items():
                 file.write(f"{key.capitalize()} - {value}\n")
-        return FileResponse(open(f"{settings.BASE_DIR}/media/shopping_list.txt", "rb"))
+        return FileResponse(
+            open(f"{settings.BASE_DIR}/media/shopping_list.txt", "rb")
+        )
 
 
 class IngredientTypeViewSet(viewsets.ModelViewSet):
@@ -132,4 +143,3 @@ class IngredientTypeViewSet(viewsets.ModelViewSet):
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientTypeFilter
-

@@ -64,6 +64,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -125,7 +126,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             RecipeIngredients.objects.create(ingredient=current_ingredient, recipe=instance)
         instance.save()
         return instance
-
 
     class Meta:
         model = Recipe

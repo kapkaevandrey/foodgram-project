@@ -1,8 +1,7 @@
-from rest_framework import mixins, viewsets, filters, status
+from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
 
 from djoser.views import UserViewSet
 from django.shortcuts import get_object_or_404
@@ -10,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 
 from .serializers import GetUserSerializer
+from .pagination import PageNumberLimitPagination
 
 User = get_user_model()
 
@@ -40,9 +40,17 @@ class CustomUserViewSets(UserViewSet):
         serializer = GetUserSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['get'], detail=False, permission_classes=[IsAuthenticated],
-            pagination_class=PageNumberPagination)
+    @action(methods=['get'], detail=False,
+            permission_classes=[IsAuthenticated],
+            pagination_class=PageNumberLimitPagination)
     def subscriptions(self, request):
         subscribers = request.user.subscribers.all()
-        serializer = GetUserSerializer(subscribers, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        page = self.paginate_queryset(subscribers)
+        serializer = GetUserSerializer(page, many=True)
+        recipe_limit = self.request.query_params.get('recipe_limit')
+        if recipe_limit and recipe_limit.isdigit() and int(recipe_limit) > 0:
+            recipe_limit = int(recipe_limit)
+            for obj in serializer.data:
+                obj['recipes'] = obj['recipes'][:recipe_limit]
+        print(serializer.data)
+        return self.get_paginated_response(serializer.data)
