@@ -1,14 +1,14 @@
 import re
 
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (Tag, Recipe, Ingredient, IngredientType,
-                            RecipeIngredients, FavoriteRecipes, ShoppingList)
+from recipes.models import (FavoriteRecipes, Ingredient, IngredientType,
+                            Recipe, RecipeIngredients, ShoppingList, Tag)
 
 User = get_user_model()
 

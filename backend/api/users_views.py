@@ -1,15 +1,14 @@
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
+from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from djoser.views import UserViewSet
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext as _
-
-from .serializers import GetUserSerializer
 from .pagination import PageNumberLimitPagination
+from .serializers import GetUserSerializer
 
 User = get_user_model()
 

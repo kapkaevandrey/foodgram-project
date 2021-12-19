@@ -1,20 +1,20 @@
-from django.shortcuts import get_object_or_404
-from django.utils.translation import gettext as _
 from django.conf import settings
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from django_filters.rest_framework import DjangoFilterBackend
-
-from rest_framework import viewsets, permissions, status, mixins, filters
+from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from recipes.models import Tag, Recipe, IngredientType, Ingredient
-from .serializers import (TagSerializer, RecipeSimpleSerializer,
-                          RecipeGetSerializer, RecipeSerializer,
-                          IngredientTypeSerializer)
-from .permissions import AuthorAdminOrReadOnly, AdminOrReadOnly
-from .pagination import PageNumberLimitPagination
+from recipes.models import Ingredient, IngredientType, Recipe, Tag
+
 from .filters import IngredientTypeFilter, RecipeFilter
+from .pagination import PageNumberLimitPagination
+from .permissions import AdminOrReadOnly, AuthorAdminOrReadOnly
+from .serializers import (IngredientTypeSerializer, RecipeGetSerializer,
+                          RecipeSerializer, RecipeSimpleSerializer,
+                          TagSerializer)
 
 
 class TagViewSet(mixins.RetrieveModelMixin,

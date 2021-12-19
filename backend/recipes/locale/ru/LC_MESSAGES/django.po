@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-20 00:44+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+#: .\recipes\models.py:19
+msgid "The HEX code is not valid, please use the format #ffffff"
+msgstr ""
+
+#: .\recipes\models.py:28
+msgid "Tag"
+msgstr "Тэг"
+
+#: .\recipes\models.py:29
+msgid "Tags"
+msgstr "Тэги"
+
+#: .\recipes\models.py:34
+msgid "name"
+msgstr "Название"
+
+#: .\recipes\models.py:35
+msgid "measurement_unit"
+msgstr "единица измерения"
+
+#: .\recipes\models.py:38
+#, python-brace-format
+msgid "{title} ({mou})"
+msgstr "{title} ({mou})"
+
+#: .\recipes\models.py:43 .\recipes\models.py:44
+msgid "Type of ingredient"
+msgstr "Вид ингредиента"
+
+#: .\recipes\models.py:59
+#, python-brace-format
+msgid "{type} - {amount}"
+msgstr "{type} - {amount}"
+
+#: .\recipes\models.py:64
+msgid "Ingredient"
+msgstr "Ингредиент"
+
+#: .\recipes\models.py:65
+msgid "Ingredients"
+msgstr "Ингредиенты"
+
+#: .\recipes\models.py:80
+#, python-brace-format
+msgid "{recipe} - {ingredient}"
+msgstr "{recipe} - {ingredient}"
+
+#: .\recipes\models.py:85
+msgid "Recipe Ingredients"
+msgstr "Ингредиенты рецепта"
+
+#: .\recipes\models.py:86
+msgid "Recipes Ingredients"
+msgstr "Ингредиенты рецепта"
+
+#: .\recipes\models.py:113
+#, python-brace-format
+msgid "{title}"
+msgstr "{title}"
+
+#: .\recipes\models.py:117
+msgid "Recipe"
+msgstr "Рецепт"
+
+#: .\recipes\models.py:118
+msgid "Recipes"
+msgstr "Рецепты"
+
+#: .\recipes\models.py:130
+#, python-brace-format
+msgid "{tag} - {recipe}"
+msgstr "{tag} - {recipe}"
+
+#: .\recipes\models.py:134
+msgid "Recipe Tag"
+msgstr "Тег Рецепта"
+
+#: .\recipes\models.py:135
+msgid "Recipes Tags"
+msgstr "Теги Рецепта"
+
+#: .\recipes\models.py:146 .\recipes\models.py:163
+#, python-brace-format
+msgid "{user} - {recipe}"
+msgstr "{user} - {recipe}"
+
+#: .\recipes\models.py:151
+msgid "Favorite Recipe"
+msgstr "Избранный рецепт"
+
+#: .\recipes\models.py:152
+msgid "Favorite Recipes"
+msgstr "Избранные рецепты"
+
+#: .\recipes\models.py:168
+msgid "Shopping List"
+msgstr "Список покупок"
+
+#: .\recipes\models.py:169
+msgid "Shopping Lists"
+msgstr "Списки покупок"

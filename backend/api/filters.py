@@ -1,6 +1,7 @@
-from django_filters.rest_framework import CharFilter, FilterSet, AllValuesMultipleFilter
+from django_filters.rest_framework import (AllValuesMultipleFilter, CharFilter,
+                                           FilterSet)
 
-from recipes.models import Recipe, IngredientType
+from recipes.models import IngredientType, Recipe
 
 
 class RecipeFilter(FilterSet):

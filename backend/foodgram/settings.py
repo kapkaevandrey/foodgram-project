@@ -1,16 +1,14 @@
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-dc(n1l-_s(cjv9fhhuvaail6tyfz4)&)ompk1m+iyu$hzevctb')
 
-SECRET_KEY = 'django-insecure-dc(n1l-_s(cjv9fhhuvaail6tyfz4)&)ompk1m+iyu$hzevctb'
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default="*").split(",")
 
 INSTALLED_APPS = [
     'api',
@@ -87,6 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOCALE_PATHS = [
     (BASE_DIR / 'recipes/locale'),
     (BASE_DIR / 'users/locale'),
+    (BASE_DIR / 'api/locale')
 ]
 
 # Internationalization
@@ -98,7 +97,7 @@ LANGUAGES = (
     ('ru', 'Russian'),
 )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
