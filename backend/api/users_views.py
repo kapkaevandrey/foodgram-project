@@ -50,6 +50,6 @@ class CustomUserViewSets(UserViewSet):
         if recipe_limit and recipe_limit.isdigit() and int(recipe_limit) > 0:
             recipe_limit = int(recipe_limit)
             for obj in serializer.data:
-                obj['recipes'] = obj['recipes'][:recipe_limit]
-        print(serializer.data)
+                if 'recipes' in obj:
+                    obj['recipes'] = obj['recipes'][:recipe_limit]
         return self.get_paginated_response(serializer.data)

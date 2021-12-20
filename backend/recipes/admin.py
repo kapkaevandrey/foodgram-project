@@ -1,27 +1,36 @@
 from django.contrib import admin
+from django.utils.translation import gettext as _
 
 from .models import (FavoriteRecipes, Ingredient, IngredientType, Recipe,
                      RecipeIngredients, RecipeTag, ShoppingList, Tag)
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'slug', 'color')
     search_fields = ('slug',)
     list_filter = ('color',)
 
 
+@admin.register(IngredientType)
 class IngredientTypeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'measurement_unit')
     search_fields = ('name',)
     list_filter = ('measurement_unit',)
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('pk', 'type', 'amount')
     search_fields = ('type',)
     list_select_related = True
 
 
+class IngredientInstance(admin.TabularInline):
+    model = Ingredient
+
+
+@admin.register(RecipeTag)
 class RecipeTagAdmin(admin.ModelAdmin):
     list_display = ('pk', 'recipe', 'tag')
     search_fields = ('recipe',)
@@ -29,35 +38,35 @@ class RecipeTagAdmin(admin.ModelAdmin):
     list_select_related = True
 
 
+@admin.register(RecipeIngredients)
 class RecipeIngredientsAdmin(admin.ModelAdmin):
     list_display = ('pk', 'recipe', 'ingredient')
     search_fields = ('recipe',)
     list_filter = ('ingredient',)
 
 
+@admin.register(FavoriteRecipes)
 class FavoriteRecipesAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe')
     search_fields = ('recipe', 'user')
     list_filter = ('recipe', 'user')
 
 
+@admin.register(ShoppingList)
 class ShoppingListAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe')
     search_fields = ('recipe', 'user')
     list_filter = ('recipe', 'user')
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'author', 'cooking_time', 'pub_date')
+    list_display = ('pk', 'name', 'author', 'cooking_time', 'pub_date', 'favorites_num')
     search_fields = ('name', 'author')
     list_filter = ('tags', 'author')
 
+    def favorites_num(self, obj):
+        print(self)
+        return obj.recipe_followers.count()
 
-admin.site.register(Tag, TagAdmin)
-admin.site.register(IngredientType, IngredientTypeAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(RecipeTag, RecipeTagAdmin)
-admin.site.register(RecipeIngredients, RecipeIngredientsAdmin)
-admin.site.register(FavoriteRecipes, FavoriteRecipesAdmin)
-admin.site.register(ShoppingList, ShoppingListAdmin)
-admin.site.register(Recipe, RecipeAdmin)
+    favorites_num.short_description = _('Saved to favorite')
