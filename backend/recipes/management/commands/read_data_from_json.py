@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 
-from recipes.models import IngredientType
+from recipes.models import IngredientType, Tag
 
 User = get_user_model()
 
@@ -16,6 +16,7 @@ User = get_user_model()
 class Command(BaseCommand):
     FILES_AND_MODELS_NAME = {
         'ingredients.json': {'model_obj': IngredientType},
+        'tags.json': {'model_obj': Tag}
     }
 
     help = "This script update rating in DB models Title."
@@ -33,7 +34,6 @@ class Command(BaseCommand):
         По умолчанию: ~/static/data"""
         if path is None:
             os.chdir(settings.BASE_DIR)
-            os.chdir("..")
             os.chdir(pathlib.Path.cwd() / 'data')
         elif os.path.exists(path):
             os.chdir(path)
