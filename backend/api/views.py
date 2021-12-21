@@ -43,10 +43,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return serializer.save(author=self.request.user)
 
     def get_queryset(self):
-        queryset = Recipe.objects.all()
         user = self.request.user
         if user.is_anonymous:
-            return queryset
+            return Recipe.objects.all()
         fav_param_value = self.request.query_params.get('is_favorited')
         shop_param_value = self.request.query_params.get(
             'is_in_shopping_cart'
@@ -56,12 +55,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         in_shop_cart = (shop_param_value in
                         settings.URLS_VALID_VALUE_PARAMS['True'])
         if is_favorite and in_shop_cart:
-            queryset = user.favorite_recipes.all() & user.shopping_list.all()
+            return user.favorite_recipes.all() & user.shopping_list.all()
         elif in_shop_cart:
-            queryset = user.shopping_list.all()
+            return user.shopping_list.all()
         elif is_favorite:
-            queryset = user.favorite_recipes.all()
-        return queryset
+            return user.favorite_recipes.all()
+        return Recipe.objects.all()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = False
@@ -82,16 +81,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST)
             recipe.recipe_followers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        if request.method == 'GET':
-            if recipe_exist:
+        if recipe_exist:
                 return Response(
                     {"errors": _(
                         'This recipe is already in the favorites list'
                     )},
                     status=status.HTTP_400_BAD_REQUEST)
-            recipe.recipe_followers.add(user)
-            serializer = RecipeSimpleSerializer(recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        recipe.recipe_followers.add(user)
+        serializer = RecipeSimpleSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get', 'delete'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
@@ -106,17 +104,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST)
             recipe.shop_followers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        if request.method == 'GET':
-            if recipe_exist:
-                return Response(
+        if recipe_exist:
+            return Response(
                     {'errors': _(
                         'This recipe is already in the shopping list'
                     )},
                     status=status.HTTP_400_BAD_REQUEST)
-            recipe.shop_followers.add(user)
-            recipe.save()
-            serializer = RecipeSimpleSerializer(recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        recipe.shop_followers.add(user)
+        recipe.save()
+        serializer = RecipeSimpleSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], detail=False,
             permission_classes=[permissions.IsAuthenticated], )

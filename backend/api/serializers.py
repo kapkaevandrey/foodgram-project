@@ -7,14 +7,17 @@ from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (FavoriteRecipes, Ingredient, IngredientType,
-                            Recipe, RecipeIngredients, ShoppingList, Tag)
+from recipes.models import (Ingredient, IngredientType,
+                            Recipe, RecipeIngredients, Tag)
 
 User = get_user_model()
 
 
 class CustomUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField(required=False, read_only=True)
+    is_subscribed = serializers.SerializerMethodField(
+        required=False,
+        read_only=True
+    )
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
@@ -24,7 +27,8 @@ class CustomUserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed')
         read_only_fields = ('username', 'email')
 
 
@@ -56,7 +60,9 @@ class IngredientGetSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=IngredientType.objects.all(), source='type')
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=IngredientType.objects.all(),
+        source='type')
 
     class Meta:
         model = Ingredient
@@ -64,15 +70,20 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class RecipeGetSerializer(serializers.ModelSerializer):
-    is_favorited = serializers.SerializerMethodField(required=False, read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(required=False, read_only=True)
+    is_favorited = serializers.SerializerMethodField(
+        required=False,
+        read_only=True
+    )
+    is_in_shopping_cart = serializers.SerializerMethodField(
+        required=False,
+        read_only=True
+    )
     author = CustomUserSerializer()
     tags = TagSerializer(many=True)
     ingredients = IngredientGetSerializer(many=True)
@@ -111,19 +122,30 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tag_list)
         for ingredient in ingredients:
-            current_ingredient, status = Ingredient.objects.get_or_create(**ingredient)
-            RecipeIngredients.objects.create(ingredient=current_ingredient, recipe=recipe)
+            current_ingredient, status = Ingredient.objects.get_or_create(
+                **ingredient
+            )
+            RecipeIngredients.objects.create(
+                ingredient=current_ingredient,
+                recipe=recipe
+            )
         return recipe
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         tag_list = validated_data.pop('tags')
-        [setattr(instance, attr, value) for attr, value in validated_data.items()]
+        [setattr(instance, attr, value) for attr, value in
+         validated_data.items()]
         instance.tags.set(tag_list)
         instance.ingredients.clear()
         for ingredient in ingredients:
-            current_ingredient, status = Ingredient.objects.get_or_create(**ingredient)
-            RecipeIngredients.objects.create(ingredient=current_ingredient, recipe=instance)
+            current_ingredient, status = Ingredient.objects.get_or_create(
+                **ingredient
+            )
+            RecipeIngredients.objects.create(
+                ingredient=current_ingredient,
+                recipe=instance
+            )
         instance.save()
         return instance
 
@@ -134,7 +156,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class GetUserSerializer(CustomUserSerializer):
     recipes = RecipeSimpleSerializer(many=True)
-    recipes_count = serializers.SerializerMethodField(required=False, read_only=True)
+    recipes_count = serializers.SerializerMethodField(
+        required=False,
+        read_only=True
+    )
 
     def get_is_subscribed(self, obj):
         return True

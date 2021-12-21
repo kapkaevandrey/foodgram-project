@@ -12,7 +12,8 @@ class MyUserAdmin(UserAdmin):
                        'password2', 'first_name', 'last_name')}
          ),
     )
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups', 'email', 'username')
+    list_filter = ('is_staff', 'is_superuser', 'is_active',
+                   'groups', 'email', 'username')
 
 
 admin.site.register(User, MyUserAdmin)

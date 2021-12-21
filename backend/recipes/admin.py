@@ -61,7 +61,8 @@ class ShoppingListAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'author', 'cooking_time', 'pub_date', 'favorites_num')
+    list_display = ('pk', 'name', 'author',
+                    'cooking_time', 'pub_date', 'favorites_num')
     search_fields = ('name', 'author')
     list_filter = ('tags', 'author')
 
