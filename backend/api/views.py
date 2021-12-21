@@ -82,11 +82,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe.recipe_followers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
         if recipe_exist:
-                return Response(
-                    {"errors": _(
-                        'This recipe is already in the favorites list'
-                    )},
-                    status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors": _('This recipe is already in the favorites list')},
+                status=status.HTTP_400_BAD_REQUEST)
         recipe.recipe_followers.add(user)
         serializer = RecipeSimpleSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -106,10 +104,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         if recipe_exist:
             return Response(
-                    {'errors': _(
-                        'This recipe is already in the shopping list'
-                    )},
-                    status=status.HTTP_400_BAD_REQUEST)
+                {'errors': _('This recipe is already in the shopping list')},
+                status=status.HTTP_400_BAD_REQUEST)
         recipe.shop_followers.add(user)
         recipe.save()
         serializer = RecipeSimpleSerializer(recipe)
