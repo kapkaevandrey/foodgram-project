@@ -1,5 +1,5 @@
 # Foodgram
-![yamdb_workflow](https://github.com/kapkaevandrey/yamdb_final/actions/workflows/foodgram_workflow.yml/badge.svg)
+![yamdb_workflow](https://github.com/kapkaevandrey/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 ## api_Foodgram
 
 ### _Описание проекта_
