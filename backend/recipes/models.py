@@ -128,7 +128,7 @@ class Recipe(models.Model):
         return _('{title}').format(title=self.name)
 
     class Meta:
-        ordering = ['pub_date']
+        ordering = ['-pub_date']
         verbose_name = _('Recipe')
         verbose_name_plural = _('Recipes')
 
