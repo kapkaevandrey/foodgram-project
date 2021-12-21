@@ -47,13 +47,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_anonymous:
             return queryset
-        is_favorite = self.request.query_params.get('is_favorited')
-        is_in_shopping_cart = self.request.query_params.get(
+        fav_param_value = self.request.query_params.get('is_favorited')
+        shop_param_value = self.request.query_params.get(
             'is_in_shopping_cart'
         )
-        if is_favorite and is_in_shopping_cart:
+        is_favorite = (fav_param_value in
+                       settings.URLS_VALID_VALUE_PARAMS['True'])
+        in_shop_cart = (shop_param_value in
+                        settings.URLS_VALID_VALUE_PARAMS['True'])
+        if is_favorite and in_shop_cart:
             queryset = user.favorite_recipes.all() & user.shopping_list.all()
-        elif is_in_shopping_cart:
+        elif in_shop_cart:
             queryset = user.shopping_list.all()
         elif is_favorite:
             queryset = user.favorite_recipes.all()

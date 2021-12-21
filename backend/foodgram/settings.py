@@ -146,3 +146,5 @@ DJOSER = {'PERMISSIONS': {'user_list': ['rest_framework.permissions.IsAuthentica
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 HEX_PATTERN = r'^#(?:[0-9a-fA-F]{3}){1,2}$'
+
+URLS_VALID_VALUE_PARAMS = {'True': ['true', '1', 'True']}
