@@ -4,7 +4,7 @@ LABEL authors='Andrey Kapkaev' version=1.0
 
 WORKDIR /code
 
-COPY requirements.txt .
+COPY  backend/requirements.txt .
 
 RUN python -m pip install --upgrade pip
 
