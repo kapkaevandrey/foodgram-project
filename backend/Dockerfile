@@ -4,10 +4,12 @@ LABEL authors='Andrey Kapkaev' version=1.0
 
 WORKDIR /code
 
-COPY  backend/requirements.txt .
+COPY  requirements.txt .
 
 RUN python -m pip install --upgrade pip
 
 RUN pip3 install -r requirements.txt
+
+RUN apt-get update && apt-get install -y gettext libgettextpo-dev
 
 COPY . .
