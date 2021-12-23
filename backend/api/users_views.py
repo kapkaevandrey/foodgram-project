@@ -20,19 +20,19 @@ class CustomUserViewSets(UserViewSet):
         user = get_object_or_404(User, id=id)
         if user == request.user:
             return Response(
-                {"errors": _('Don\'t subscribe (delete) to yourself!')},
+                {'errors': _('Don\'t subscribe (delete) to yourself!')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if request.method == 'DELETE':
             if user not in request.user.subscribers.all():
                 return Response(
-                    {"errors": _('This author is not in your subscriptions')},
+                    {'errors': _('This author is not in your subscriptions')},
                     status=status.HTTP_400_BAD_REQUEST)
             request.user.subscribers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
         if user in request.user.subscribers.all():
             return Response(
-                {"errors": _('You have already subscribed to this author')},
+                {'errors': _('You have already subscribed to this author')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         request.user.subscribers.add(user)

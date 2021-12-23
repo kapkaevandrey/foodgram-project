@@ -21,13 +21,13 @@ class Tag(models.Model):
             ))]
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ['name']
         verbose_name = _('Tag')
         verbose_name_plural = _('Tags')
+
+    def __str__(self):
+        return self.name
 
 
 class IngredientType(models.Model):
@@ -36,10 +36,6 @@ class IngredientType(models.Model):
                             max_length=256)
     measurement_unit = models.CharField(_('measurement_unit'), max_length=20)
 
-    def __str__(self):
-        return _('{title} ({mou})').format(title=self.name,
-                                           mou=self.measurement_unit)
-
     class Meta:
         ordering = ['name']
         verbose_name = _('Type of ingredient')
@@ -47,6 +43,10 @@ class IngredientType(models.Model):
         constraints = [models.UniqueConstraint(
             fields=["name", "measurement_unit"], name="unique ingredient type"
         )]
+
+    def __str__(self):
+        return _('{title} ({mou})').format(title=self.name,
+                                           mou=self.measurement_unit)
 
 
 class Ingredient(models.Model):
@@ -57,10 +57,6 @@ class Ingredient(models.Model):
         validators=(MinValueValidator(0.0),)
     )
 
-    def __str__(self):
-        return _('{type} - {amount}').format(type=self.type,
-                                             amount=self.amount)
-
     class Meta:
         ordering = ['type']
         verbose_name = _('Ingredient')
@@ -69,8 +65,12 @@ class Ingredient(models.Model):
             fields=["type", "amount"], name="unique ingredient"
         )]
 
+    def __str__(self):
+        return _('{type} - {amount}').format(type=self.type,
+                                             amount=self.amount)
 
-class RecipeIngredients(models.Model):
+
+class RecipeIngredient(models.Model):
     recipe = models.ForeignKey('Recipe',
                                related_name='recipe_ingredient',
                                on_delete=models.CASCADE,
@@ -80,10 +80,6 @@ class RecipeIngredients(models.Model):
                                    on_delete=models.CASCADE,
                                    verbose_name=_('ingredient'))
 
-    def __str__(self):
-        return _('{recipe} - {ingredient}').format(recipe=self.recipe,
-                                                   ingredient=self.ingredient)
-
     class Meta:
         ordering = ['recipe']
         verbose_name = _('Recipe Ingredients')
@@ -91,6 +87,10 @@ class RecipeIngredients(models.Model):
         constraints = [models.UniqueConstraint(
             fields=["recipe", "ingredient"],
             name="unique recipe ingredients")]
+
+    def __str__(self):
+        return _('{recipe} - {ingredient}').format(recipe=self.recipe,
+                                                   ingredient=self.ingredient)
 
 
 class Recipe(models.Model):
@@ -104,7 +104,7 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='recipes/')
     tags = models.ManyToManyField(Tag, through='RecipeTag')
     ingredients = models.ManyToManyField(Ingredient,
-                                         through=RecipeIngredients)
+                                         through=RecipeIngredient)
     cooking_time = models.PositiveBigIntegerField(
         verbose_name=_('cooking time')
     )
@@ -124,13 +124,13 @@ class Recipe(models.Model):
         verbose_name=_('saved to the shopping list')
     )
 
-    def __str__(self):
-        return _('{title}').format(title=self.name)
-
     class Meta:
         ordering = ['-pub_date']
         verbose_name = _('Recipe')
         verbose_name_plural = _('Recipes')
+
+    def __str__(self):
+        return _('{title}').format(title=self.name)
 
 
 class RecipeTag(models.Model):
@@ -155,7 +155,7 @@ class RecipeTag(models.Model):
         )]
 
 
-class FavoriteRecipes(models.Model):
+class FavoriteRecipe(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -167,10 +167,6 @@ class FavoriteRecipes(models.Model):
         verbose_name=_('recipe')
     )
 
-    def __str__(self):
-        return _('{user} - {recipe}').format(user=self.user,
-                                             recipe=self.recipe)
-
     class Meta:
         ordering = ['user']
         verbose_name = _('Favorite Recipe')
@@ -178,6 +174,10 @@ class FavoriteRecipes(models.Model):
         constraints = [models.UniqueConstraint(
             fields=["user", "recipe"], name="unique favorite user recipe"
         )]
+
+    def __str__(self):
+        return _('{user} - {recipe}').format(user=self.user,
+                                             recipe=self.recipe)
 
 
 class ShoppingList(models.Model):
@@ -192,10 +192,6 @@ class ShoppingList(models.Model):
         verbose_name=_('recipe')
     )
 
-    def __str__(self):
-        return _('{user} - {recipe}').format(user=self.user,
-                                             recipe=self.recipe)
-
     class Meta:
         ordering = ['user']
         verbose_name = _('Shopping List')
@@ -203,3 +199,7 @@ class ShoppingList(models.Model):
         constraints = [models.UniqueConstraint(
             fields=["user", "recipe"], name="unique recipe in shopping list"
         )]
+
+    def __str__(self):
+        return _('{user} - {recipe}').format(user=self.user,
+                                             recipe=self.recipe)

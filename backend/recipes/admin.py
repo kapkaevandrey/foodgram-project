@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import gettext as _
 
-from .models import (FavoriteRecipes, Ingredient, IngredientType, Recipe,
-                     RecipeIngredients, RecipeTag, ShoppingList, Tag)
+from .models import (FavoriteRecipe, Ingredient, IngredientType, Recipe,
+                     RecipeIngredient, RecipeTag, ShoppingList, Tag)
 
 
 @admin.register(Tag)
@@ -38,14 +38,14 @@ class RecipeTagAdmin(admin.ModelAdmin):
     list_select_related = True
 
 
-@admin.register(RecipeIngredients)
+@admin.register(RecipeIngredient)
 class RecipeIngredientsAdmin(admin.ModelAdmin):
     list_display = ('pk', 'recipe', 'ingredient')
     search_fields = ('recipe',)
     list_filter = ('ingredient',)
 
 
-@admin.register(FavoriteRecipes)
+@admin.register(FavoriteRecipe)
 class FavoriteRecipesAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe')
     search_fields = ('recipe', 'user')

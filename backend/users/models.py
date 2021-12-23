@@ -33,10 +33,6 @@ class Follow(models.Model):
                 _('You can\'t subscribe to yourself')
             )
 
-    def __str__(self):
-        return _('{user} follow to {author}').format(user=self.user,
-                                                     author=self.author)
-
     class Meta:
         ordering = ['user']
         verbose_name = _('Follow')
@@ -44,6 +40,10 @@ class Follow(models.Model):
         constraints = [models.UniqueConstraint(
             fields=["user", "author"], name="unique follow"
         )]
+
+    def __str__(self):
+        return _('{user} follow to {author}').format(user=self.user,
+                                                     author=self.author)
 
 
 User._meta.get_field('last_name').blank = False

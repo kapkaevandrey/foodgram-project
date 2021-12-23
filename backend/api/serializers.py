@@ -8,7 +8,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from recipes.models import (Ingredient, IngredientType, Recipe,
-                            RecipeIngredients, Tag)
+                            RecipeIngredient, Tag)
 
 User = get_user_model()
 
@@ -125,7 +125,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
             )
-            RecipeIngredients.objects.create(
+            RecipeIngredient.objects.create(
                 ingredient=current_ingredient,
                 recipe=recipe
             )
@@ -142,7 +142,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
             )
-            RecipeIngredients.objects.create(
+            RecipeIngredient.objects.create(
                 ingredient=current_ingredient,
                 recipe=instance
             )
