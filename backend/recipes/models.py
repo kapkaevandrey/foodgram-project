@@ -113,7 +113,7 @@ class Recipe(models.Model):
                                     verbose_name=_('date of publication'))
     recipe_followers = models.ManyToManyField(
         User,
-        through='FavoriteRecipes',
+        through='FavoriteRecipe',
         related_name='favorite_recipes',
         verbose_name=_('recipe subscribers')
     )

@@ -18,25 +18,26 @@ class CustomUserViewSets(UserViewSet):
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
         user = get_object_or_404(User, id=id)
+        follow_exists = request.user.users.filter(author=user).exists()
         if user == request.user:
             return Response(
                 {'errors': _('Don\'t subscribe (delete) to yourself!')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if request.method == 'DELETE':
-            if user not in request.user.subscribers.all():
+            if not follow_exists:
                 return Response(
                     {'errors': _('This author is not in your subscriptions')},
                     status=status.HTTP_400_BAD_REQUEST)
             request.user.subscribers.remove(user)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        if user in request.user.subscribers.all():
+        if follow_exists:
             return Response(
                 {'errors': _('You have already subscribed to this author')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         request.user.subscribers.add(user)
-        serializer = GetUserSerializer(user)
+        serializer = GetUserSerializer(user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], detail=False,
@@ -45,7 +46,7 @@ class CustomUserViewSets(UserViewSet):
     def subscriptions(self, request):
         subscribers = request.user.subscribers.all()
         page = self.paginate_queryset(subscribers)
-        serializer = GetUserSerializer(page, many=True)
+        serializer = GetUserSerializer(page, many=True, context={'request': request})
         recipe_limit = self.request.query_params.get('recipe_limit')
         if recipe_limit and recipe_limit.isdigit() and int(recipe_limit) > 0:
             recipe_limit = int(recipe_limit)

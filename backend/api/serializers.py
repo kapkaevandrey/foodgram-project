@@ -23,7 +23,7 @@ class CustomUserSerializer(UserSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return obj in user.subscribers.all()
+        return user.users.filter(author=obj).exists()
 
     class Meta:
         model = User
@@ -96,13 +96,15 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return user in obj.recipe_followers.all()
+        return obj.recipe_followers.filter(
+            favoriterecipe__user=user).exists()
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return user in obj.shop_followers.all()
+        return obj.shop_followers.filter(
+            shoppinglist__user=user).exists()
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -121,23 +123,27 @@ class RecipeSerializer(serializers.ModelSerializer):
         tag_list = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tag_list)
-        for ingredient in ingredients:
-            current_ingredient, status = Ingredient.objects.get_or_create(
-                **ingredient
-            )
-            RecipeIngredient.objects.create(
-                ingredient=current_ingredient,
-                recipe=recipe
-            )
+        recipe = RecipeSerializer.get_and_update_instance(
+            recipe,
+            ingredients
+        )
         return recipe
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         tag_list = validated_data.pop('tags')
-        [setattr(instance, attr, value) for attr, value in
-         validated_data.items()]
-        instance.tags.set(tag_list)
+        super().update(instance, validated_data)
         instance.ingredients.clear()
+        instance.tags.set(tag_list)
+        instance = RecipeSerializer.get_and_update_instance(
+            instance,
+            ingredients
+        )
+        return instance
+
+    @staticmethod
+    def get_and_update_instance(instance: Recipe,
+                                ingredients: dict) -> Recipe:
         for ingredient in ingredients:
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
@@ -146,7 +152,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredient=current_ingredient,
                 recipe=instance
             )
-        instance.save()
         return instance
 
     class Meta:
@@ -161,8 +166,11 @@ class GetUserSerializer(CustomUserSerializer):
         read_only=True
     )
 
-    def get_is_subscribed(self, obj):
-        return True
+    # def get_is_subscribed(self, obj):
+    #     print(self.context)
+    #     print(obj)
+    #
+    #     return True
 
     def get_recipes_count(self, obj):
         return obj.recipes.all().count()
