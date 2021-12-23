@@ -1,5 +1,5 @@
 from django_filters.rest_framework import (CharFilter, FilterSet,
-                                           ModelMultipleChoiceFilter, ModelChoiceFilter)
+                                           ModelMultipleChoiceFilter)
 from django.conf import settings
 
 from recipes.models import IngredientType, Recipe, Tag

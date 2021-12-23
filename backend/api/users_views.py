@@ -46,7 +46,8 @@ class CustomUserViewSets(UserViewSet):
     def subscriptions(self, request):
         subscribers = request.user.subscribers.all()
         page = self.paginate_queryset(subscribers)
-        serializer = GetUserSerializer(page, many=True, context={'request': request})
+        serializer = GetUserSerializer(page, many=True,
+                                       context={'request': request})
         recipe_limit = self.request.query_params.get('recipe_limit')
         if recipe_limit and recipe_limit.isdigit() and int(recipe_limit) > 0:
             recipe_limit = int(recipe_limit)
