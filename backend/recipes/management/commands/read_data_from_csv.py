@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from recipes.models import IngredientType
 
+
 User = get_user_model()
 
 
