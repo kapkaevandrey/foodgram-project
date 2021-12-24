@@ -54,6 +54,13 @@ jobs:
           tags: 15052016/foodgram_backend:latest
           context: backend
           file: backend/Dockerfile
+      - name: Push to Docker Hub backend
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: 15052016/foodgram_frontend:latest
+          context: forntend
+          file: frontend/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest

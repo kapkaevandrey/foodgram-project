@@ -8,7 +8,9 @@ services:
       - .env
 
   backend:
-    image: 15052016/foodgram_backend:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     restart: always
     command: >
       sh -c "python manage.py collectstatic --noinput &&
