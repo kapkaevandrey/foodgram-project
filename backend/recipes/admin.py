@@ -67,7 +67,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags', 'author')
 
     def favorites_num(self, obj):
-        print(self)
         return obj.recipe_followers.count()
 
     favorites_num.short_description = _('Saved to favorite')

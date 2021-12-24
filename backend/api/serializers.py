@@ -166,12 +166,6 @@ class GetUserSerializer(CustomUserSerializer):
         read_only=True
     )
 
-    # def get_is_subscribed(self, obj):
-    #     print(self.context)
-    #     print(obj)
-    #
-    #     return True
-
     def get_recipes_count(self, obj):
         return obj.recipes.all().count()
 
