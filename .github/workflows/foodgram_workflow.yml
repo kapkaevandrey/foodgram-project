@@ -66,7 +66,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          context: infra
           script: |
             sudo docker pull 15052016/foodgram_backend:latest
             sudo docker-compose stop
@@ -80,7 +79,6 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-            cd infra
             sudo docker-compose up -d
 
   send_message:
