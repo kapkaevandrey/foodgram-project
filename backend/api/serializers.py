@@ -132,13 +132,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         tag_list = validated_data.pop('tags')
-        # instance.ingredients.clear()
+        instance.ingredients.clear()
         instance.tags.set(tag_list)
         instance = RecipeSerializer.get_and_update_instance(
             instance,
             ingredients
         )
         super().update(instance, validated_data)
+
         return instance
 
     @staticmethod
@@ -152,6 +153,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredient=current_ingredient,
                 recipe=instance
             )
+        instance.ingredients.set(ingredients)
         return instance
 
     class Meta:
