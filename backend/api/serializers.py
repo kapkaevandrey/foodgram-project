@@ -7,7 +7,8 @@ from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (Ingredient, IngredientType, Recipe, Tag)
+from recipes.models import (Ingredient, IngredientType, Recipe,
+                            RecipeIngredient, Tag)
 
 User = get_user_model()
 
@@ -129,18 +130,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        instance.ingredients.clear()
         ingredients = validated_data.pop('ingredients')
         tag_list = validated_data.pop('tags')
-        # super().update(instance, validated_data)
-        [setattr(instance, attr, value) for attr, value in
-         validated_data.items()]
+        super().update(instance, validated_data)
+        instance.ingredients.clear()
         instance.tags.set(tag_list)
         instance = RecipeSerializer.get_and_update_instance(
             instance,
             ingredients
         )
-
+        instance.save()
         return instance
 
     @staticmethod
@@ -150,11 +149,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
             )
-            instance.ingredients.add(current_ingredient)
-            # RecipeIngredient.objects.get_or_create(
-            #     ingredient=current_ingredient,
-            #     recipe=instance
-            # )
+            RecipeIngredient.objects.get_or_create(
+                ingredient=current_ingredient,
+                recipe=instance
+            )
         return instance
 
     class Meta:
