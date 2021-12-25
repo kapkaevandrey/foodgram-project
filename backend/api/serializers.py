@@ -147,7 +147,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                                 ingredients: dict) -> Recipe:
         for ingredient in ingredients:
             current_ingredient, status = Ingredient.objects.get_or_create(
-                **ingredient
+                type=ingredient['type'],
+                amount=ingredient['amount']
             )
             RecipeIngredient.objects.create(
                 ingredient=current_ingredient,
