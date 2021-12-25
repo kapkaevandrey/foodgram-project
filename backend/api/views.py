@@ -43,9 +43,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.filterset_class.favorite_and_shopping_cart(self.request)
 
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = False
-        return self.update(request, *args, **kwargs)
+    # def partial_update(self, request, *args, **kwargs):
+    #     kwargs['partial'] = False
+    #     return self.update(request, *args, **kwargs)
 
     @action(methods=['get', 'delete'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
