@@ -149,11 +149,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
             )
-            RecipeIngredient.objects.get_or_create(
-                ingredient=current_ingredient,
-                recipe=instance
-            )
-        instance.ingredients.set(ingredients)
+            instance.ingredients.add(current_ingredient)
+            # RecipeIngredient.objects.get_or_create(
+            #     ingredient=current_ingredient,
+            #     recipe=instance
+            # )
         return instance
 
     class Meta:
