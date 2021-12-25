@@ -148,7 +148,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient, status = Ingredient.objects.get_or_create(
                 **ingredient
             )
-            RecipeIngredient.objects.create(
+            RecipeIngredient.objects.get_or_create(
                 ingredient=current_ingredient,
                 recipe=instance
             )
