@@ -124,8 +124,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tag_list)
         recipe = RecipeSerializer.get_and_update_instance(
-            recipe,
-            ingredients
+            instance=recipe,
+            ingredients=ingredients
         )
         return recipe
 
@@ -136,8 +136,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.ingredients.clear()
         instance.tags.set(tag_list)
         instance = RecipeSerializer.get_and_update_instance(
-            instance,
-            ingredients
+            instance=instance,
+            ingredients=ingredients
         )
         instance.save()
         return instance
@@ -155,6 +155,13 @@ class RecipeSerializer(serializers.ModelSerializer):
                 recipe=instance
             )
         return instance
+
+    def validate_ingredients(self, value):
+        ingredients_type = [ingredient['type'] for ingredient in value]
+        if len(ingredients_type) != len(set(ingredients_type)):
+            raise serializers.ValidationError(
+                _('This recipe already has this ingredient'))
+        return value
 
     class Meta:
         model = Recipe
