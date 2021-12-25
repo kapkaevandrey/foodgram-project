@@ -61,9 +61,9 @@ class Ingredient(models.Model):
         ordering = ['type']
         verbose_name = _('Ingredient')
         verbose_name_plural = _('Ingredients')
-        constraints = [models.UniqueConstraint(
-            fields=["type", "amount"], name="unique ingredient"
-        )]
+        # constraints = [models.UniqueConstraint(
+        #     fields=["type", "amount"], name="unique ingredient"
+        # )]
 
     def __str__(self):
         return _('{type} - {amount}').format(type=self.type,
