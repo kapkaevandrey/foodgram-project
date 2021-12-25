@@ -1,10 +1,18 @@
 # Foodgram
 ![yamdb_workflow](https://github.com/kapkaevandrey/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 ## api_Foodgram
+Пример запущенного сервиса:
+[lucky-foodgram.tk](http://lucky-foodgram.tk/recipes)
+
+Данные для доступа к админ-зоне:
+
+***email:*** admin@admin.com
+
+***password:*** eziki
 
 ### _Описание проекта_
 
-> ***Гиппократ*** _ — древнегреческий целитель, врач и философ_
+> ***Гиппократ***  (_древнегреческий целитель, врач и философ_)
 >>И те, что пишут не для славы, желают признания, что хорошо написали, а те, что читают их, — похвалы за то, что прочли.
 -------------------------------------------------------------------
 
