@@ -1,5 +1,5 @@
 from django_filters.rest_framework import (CharFilter, FilterSet,
-                                           ModelMultipleChoiceFilter)
+                                           ModelMultipleChoiceFilter, NumberFilter)
 from django.conf import settings
 
 from recipes.models import IngredientType, Recipe, Tag
@@ -10,10 +10,11 @@ class RecipeFilter(FilterSet):
                                      lookup_expr='exact',
                                      to_field_name='slug',
                                      queryset=Tag.objects.all())
+    author = NumberFilter(field_name="author__id")
 
     class Meta:
         model = Recipe
-        fields = ['tags']
+        fields = ['tags', 'author']
 
     @staticmethod
     def favorite_and_shopping_cart(request):
