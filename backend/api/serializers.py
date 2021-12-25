@@ -139,6 +139,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             instance,
             ingredients
         )
+        instance.save()
         return instance
 
     @staticmethod
