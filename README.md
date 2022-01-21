@@ -4,11 +4,6 @@
 Пример запущенного сервиса:
 [lucky-foodgram.tk](http://lucky-foodgram.tk/recipes)
 
-Данные для доступа к админ-зоне:
-
-***email:*** admin@admin.com
-
-***password:*** eziki
 
 ### _Описание проекта_
 
